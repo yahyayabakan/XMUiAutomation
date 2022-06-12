@@ -19,30 +19,40 @@ public class UserCase {
     HomePage hp = new HomePage();
     EconomicCalender ec = new EconomicCalender();
     RiskWarning rw = new RiskWarning();
+
     @Test
     public void test() throws InterruptedException {
+        //1. Open Home page (make any check here if needed).
         Driver.get().get("https://www.xm.com/");
         hp.acceptAll.click();
+
+        //2. Click the <Research and Education> link located at the top menu (make any check here if needed).
         hp.researchAndEducation.click();
+
+        //3. Click <Economic Calendar> link in the opened menu (make any check here if needed).
         hp.economicCalender.click();
+
+        //4. Click <Yesterday> button and check that date is correct.
         Driver.get().switchTo().frame(ec.iframe);
         ec.yesterday.click();
         WebDriverWait wait = new WebDriverWait(Driver.get(), Duration.ofSeconds(4));
         wait.until(ExpectedConditions.invisibilityOf(ec.yesterday));
         String yesterday = ec.theDay.getText();
-        System.out.println(yesterday);
-        //String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
         String dateToday = new SimpleDateFormat("EEEEEEEEE, MMMMMMM d, yyyy").format(new Date());
         assertTrue(yesterday.compareTo(dateToday)<0);
+
+        //5. Click <Today> button and check that date is correct.
         ec.today.click();
         Thread.sleep(1000);
         String today = ec.theDay.getText();
         assertEquals(today, dateToday);
+
+        //6. Click <Tomorrow> button and check that date is correct.
         ec.tomorrow.click();
+        Thread.sleep(1000);
         wait.until(ExpectedConditions.visibilityOf(ec.theDay));
         String tomorrow = ec.theDay.getText();
         assertTrue(tomorrow.compareTo(today) < 0);
-
 
         //8. Click <here> link in the “disclaimer” block at the bottom (make any check here if needed).
         Driver.get().switchTo().defaultContent();
@@ -63,13 +73,9 @@ public class UserCase {
         Set<String> windowHandles = Driver.get().getWindowHandles();
         System.out.println(windowHandles.size());
         for(String eachTab : windowHandles){
-
             if(!eachTab.equals(currentWindowHandle));
             Driver.get().switchTo().window(eachTab);
-
             break;
-
-
         }
         assertEquals(Driver.get().getTitle(), "XM-Risk-Disclosures-for-Financial-Instruments.pdf");
     }
