@@ -4,20 +4,14 @@ import com.XM.pages.EconomicCalender;
 import com.XM.pages.HomePage;
 import com.XM.pages.RiskWarning;
 import com.XM.utilities.Driver;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Test;
-
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Set;
-
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertTrue;
 
@@ -41,11 +35,11 @@ public class UserCase {
         String dateToday = new SimpleDateFormat("EEEEEEEEE, MMMMMMM d, yyyy").format(new Date());
         assertTrue(yesterday.compareTo(dateToday)<0);
         ec.today.click();
-        wait.until(ExpectedConditions.invisibilityOf(ec.theDay));
+        Thread.sleep(1000);
         String today = ec.theDay.getText();
         assertEquals(today, dateToday);
         ec.tomorrow.click();
-        wait.until(ExpectedConditions.invisibilityOf(ec.theDay));
+        wait.until(ExpectedConditions.visibilityOf(ec.theDay));
         String tomorrow = ec.theDay.getText();
         assertTrue(tomorrow.compareTo(today) < 0);
 
@@ -58,10 +52,25 @@ public class UserCase {
         assertEquals(Driver.get().getCurrentUrl(), "https://www.xm.com/research/risk_warning");
 
         //9. Click <here> link in the “Risk Warning” block at the bottom.
+        actions.moveToElement(ec.hereDisclaimer);
+
+        wait.until(ExpectedConditions.elementToBeClickable(rw.hereRiskWarning));
+        Thread.sleep(2000);
         rw.hereRiskWarning.click();
-        for(String window : Driver.get().getWindowHandles()){
-            Driver.get().switchTo().window(window);
-            System.out.println(Driver.get().getCurrentUrl());
+        String currentWindowHandle = Driver.get().getWindowHandle();
+
+        Thread.sleep(2000);
+        Set<String> windowHandles = Driver.get().getWindowHandles();
+        System.out.println(windowHandles.size());
+        for(String eachTab : windowHandles){
+
+            if(!eachTab.equals(currentWindowHandle));
+            Driver.get().switchTo().window(eachTab);
+
+            break;
+
+
         }
+        assertEquals(Driver.get().getTitle(), "XM-Risk-Disclosures-for-Financial-Instruments.pdf");
     }
 }
